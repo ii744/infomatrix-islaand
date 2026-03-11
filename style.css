@@ -1,0 +1,101 @@
+/*ВХІД КОРИСТУВАЧА-ВОЛОНТЕРА - СТИЛІ*/
+*{
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;   
+}
+
+
+body {
+    min-height: 100vh;
+    background-color: #DDDDDD;
+    font-family: 'Raleway';
+    color: #494949; 
+}
+
+.section-heading.text-center h2
+{
+    margin-top: 5%;
+    font-size: 7vw;
+    text-align: center;
+    font-family: "El Messiri";
+    font-style: normal;
+    position: relative;
+    padding-bottom: 15px;
+}
+
+.section-heading.text-center h2::after {
+    content: "";
+    position: absolute;
+    bottom: 0;          
+    left: 50%;          
+    transform: translateX(-50%);
+    width: 13%;         
+    height: 2px;        
+    background-color: #494949; 
+}
+
+
+.section-heading.text-center .btn.btn-ouyline{
+    color: #494949;
+    font-family: "El Messiri";
+    font-weight: bolder; 
+}
+
+.section-heading.text-center a{
+    text-decoration: none;
+    color: #494949;
+    font-family: "El Messiri";  
+}
+
+/*.container.section-login.text-center{
+    margin-top: 5%;
+
+}*/
+
+.custom-input {           
+    border: 1px solid #282828;   
+    border-radius: 5px;        
+}
+
+
+.custom-input::placeholder {
+    color: #979595;
+}
+
+.custom-input:focus {
+
+    border-color: #282828;      
+    box-shadow: none;          
+}
+
+.container.section-login-gromad.text-center .row.justify-content-center .col-12.col-md-4.col-lg-2{
+margin-top: 2%;
+}
+
+/*.container.section-login.text-center .row.justify-content-center .col-12.col-md-6.col-lg-4 button:hover{
+background-color: #302d2d;
+color: white;
+}
+.container.section-login-gender.text-center .row.justify-content-center .col-12.col-md-4.col-lg-2 button:hover{
+background-color: #605959;
+color: white;
+}*/
+
+.section-heading.text-center{
+    margin-bottom: 2vw;
+}
+
+.form-select.form-select-lg.mb-3{
+ 
+    border-color: #ffffff;
+    
+}
+.text-container {
+    position: absolute;
+    right: 20%;
+    left: 40%;
+    top: 30%;
+    opacity: 1;
+    z-index: 10;
+}
