@@ -10,8 +10,7 @@ class TransactionBase(BaseModel):
     created_at: datetime
 
     class Config:
-        from_attributes = True # Це дозволяє Pydantic працювати з моделями бази даних
-# Це те, що ми чекаємо від користувача при реєстрації
+        from_attributes = True
 class UserCreate(BaseModel):
     email: str
     password: str
@@ -19,12 +18,10 @@ class UserCreate(BaseModel):
     last_name: str
     location: str
 
-# Це те, що ми чекаємо від користувача при вході
 class UserLogin(BaseModel):
     email: str
     password: str
 
-# Це те, що ми віддамо йому у відповідь (його цифровий бейдж)
 class Token(BaseModel):
     access_token: str
     token_type: str
@@ -41,7 +38,6 @@ class RequestCreate(BaseModel):
     location: str
     category: str
 
-# Схема для відгуку на завдання (кнопка "Відгукнутися")
 class ResponseCreate(BaseModel):
     request_id: str
     message: Optional[str] = ""

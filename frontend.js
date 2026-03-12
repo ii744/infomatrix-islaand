@@ -1,10 +1,6 @@
-// Головна адреса твого бекенду (тепер вона доступна всюди!)
 const API_URL = "http://127.0.0.1:8000";
 
 document.addEventListener('DOMContentLoaded', () => {
-    // ==========================================
-    // 1. ЛОГІКА РЕЄСТРАЦІЇ (index-regist.html)
-    // ==========================================
     const registerForm = document.querySelector('form');
     const firstNameInput = document.querySelector('input[placeholder="Ім’я"]');
     
@@ -45,9 +41,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ==========================================
-    // 2. ЛОГІКА ЛОГІНУ (index.html)
-    // ==========================================
     const loginEmailInput = document.querySelector('input[placeholder="Ім’я або адреса електронної пошти"]');
 
     if (registerForm && loginEmailInput) {
@@ -82,19 +75,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ==========================================
-    // 3. ГОЛОВНА СТОРІНКА (index-main.html)
-    // ==========================================
     const feedContainer = document.getElementById('feed-container');
     const token = localStorage.getItem('token'); 
-
-    // Якщо ми на головній сторінці, але токена немає — виганяємо на логін
     if (window.location.pathname.includes('index-main.html') && !token) {
         alert("Будь ласка, увійдіть у систему!");
         window.location.href = "index.html";
     }
 
-    // --- КНОПКА: МІЙ АКАУНТ ---
     const btnProfile = document.getElementById('btn-profile');
     if (btnProfile) {
         btnProfile.addEventListener('click', async (e) => {
@@ -118,7 +105,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- КНОПКА: ОСТАННІ ЗАПИТИ (СТРІЧКА) ---
     const btnLatest = document.getElementById('btn-latest');
     if (btnLatest && feedContainer) {
         btnLatest.addEventListener('click', async () => {
@@ -153,7 +139,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- КНОПКА: СТВОРИТИ ЗАПИТ ---
     const btnCreate = document.getElementById('btn-create');
     if (btnCreate) {
         btnCreate.addEventListener('click', async () => {
@@ -182,7 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (response.ok) {
                     alert("Завдання успішно створено!");
-                    if(btnLatest) btnLatest.click(); // Оновлюємо стрічку
+                    if(btnLatest) btnLatest.click();
                 } else {
                     const err = await response.json();
                     alert("Помилка: " + err.detail); 
