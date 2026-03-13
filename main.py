@@ -269,3 +269,8 @@ def accept_response(
     db.commit()
     
     return {"message": "Виконавця обрано! Завдання тепер в статусі 'У процесі'."}
+
+@app.get("/users/me/requests")
+def get_my_requests(db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    my_requests = db.query(models.Request).filter(models.Request.author_id == current_user.id).order_by(models.Request.created_at.desc()).all()
+    return my_requests

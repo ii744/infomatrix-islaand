@@ -1,5 +1,3 @@
-ОСНОВНА СТОРІНКА
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,7 +12,7 @@
 </head>
 <body>
     <div class="buttons">
-        <a href="#" id="btn-profile">
+        <a href="profile.html" style="text-decoration: none;">
             <h5 style="float: right; font-size: 35px; font-family: 'El Messiri'; margin-right: 20px; color: #000;">Мій акаунт</h5>
         </a>
     </div>
@@ -27,17 +25,20 @@
         <img style="max-width: 100%; opacity: 30%; margin-top: 100px; margin-bottom: 200px; z-index: -1;" src="img/bankchasu.png" alt="">
     </div>
 </div>
-<div style="margin-top: -30%;" class="section-buttons">
-    <button id="btn-create" style="margin-top: 3.5vw; margin-bottom: 1vw; font-family: 'El Messiri'; background-color: #494949;  min-width: 250px; position: relative; margin-left: 670px; margin-right: 415px; font-size: 20px;" type="submit" class="btn btn-dark fw-bold">Створити запит</button>    
-    <button style="margin-bottom: 2vw; font-family: 'El Messiri'; background-color: #494949;  min-width: 250px; position: relative; margin-left: 670px; margin-right: 415px; font-size: 20px;" type="submit" class="btn btn-dark fw-bold">Пошук</button>  
+<div style="margin-top: -25%;" class="section-buttons">
+    <a href="index-requests.html" style="text-decoration: none;">
+        <button style="margin-bottom: 1vw; font-family: 'El Messiri'; background-color: #494949;  min-width: 250px; position: relative; margin-left: 670px; margin-right: 415px; font-size: 20px;" type="submit" class="btn btn-dark fw-bold">Створити запит</button>    
+    </a>
+    <button id="btn-all-requests" style="margin-bottom: 2vw; font-family: 'El Messiri'; background-color: #494949;  min-width: 250px; position: relative; margin-left: 670px; margin-right: 415px; font-size: 20px;" type="button" class="btn btn-dark fw-bold">Показати всі запити</button>
 </div>
 
-<div class="container section-buttons1 text-center">
+<!-- <div class="container section-buttons1 text-center">
     <div class="d-flex justify-content-center flex-wrap gap-3">
         <button id="btn-latest" style="margin-top: 8vw; margin-bottom: 1vw; font-family: 'El Messiri'; background-color: #494949; min-width: 250px; font-size: 20px;" type="submit" class="btn btn-dark fw-bold">Останні додані запити</button>
         <button style="margin-top: 8vw; margin-bottom: 1vw; font-family: 'El Messiri'; background-color: #494949; min-width: 250px; font-size: 20px;" type="submit" class="btn btn-dark fw-bold">Рекомендовані запити</button>
     </div>
-</div>
+</div> -->
+
 <div id="feed-container" class="container mt-5" style="padding-bottom: 50px;"></div>
 
 <script src="frontend.js"></script>

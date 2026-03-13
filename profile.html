@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=El+Messiri:wght@400..700&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">  
+    <title>БАНК ЧАСУ - Мій акаунт</title>
+    <style>
+        body { background-color: #DDDDDD; font-family: 'Raleway', sans-serif; color: #494949; }
+        .profile-header { font-family: 'El Messiri', sans-serif; font-size: 3rem; text-align: center; margin-top: 20px; }
+        .avatar-img { width: 150px; height: 150px; border-radius: 50%; object-fit: cover; }
+        .request-card { background-color: white; border: none; border-radius: 0; padding: 20px; margin-bottom: 20px; }
+        .request-box { background-color: #E6E6E6; border-radius: 15px; padding: 15px; margin-bottom: 15px; }
+        .btn-custom { background-color: #494949; color: white; border-radius: 5px; min-width: 150px; }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <a href="index-main.html" class="text-decoration-none text-dark fw-bold">⚙ Налаштування</a>
+        
+        <h1 class="profile-header">Мій акаунт</h1>
+
+        <div class="row justify-content-center align-items-center mt-4">
+            <div class="col-auto">
+                <img src="img/cat.jpeg" alt="Аватар користувача" class="avatar-img shadow-sm">
+            </div>
+            <div class="col-auto">
+                <h2 id="profile-name" style="font-family: 'El Messiri';">Завантаження...</h2>
+                <p class="mb-1 fs-5">Надані години: <span id="hours-earned">0</span> годин</p>
+                <p class="mb-3 fs-5">Отримані години: <span id="hours-spent">0</span> годин</p>
+                <button class="btn btn-custom fw-bold" id="btn-create-request">Створити запит</button>
+            </div>
+        </div>
+
+        <div class="text-center mt-4 mb-5">
+            <h4 style="font-family: 'El Messiri';">Моє розташування: <span id="profile-location">...</span></h4>
+        </div>
+
+        <h1 class="profile-header mb-4">Мої запити:</h1>
+
+        <div id="my-requests-list" class="col-md-8 mx-auto pb-5">
+            <p class="text-center">Завантажуємо історію...</p>
+        </div>
+    </div>
+
+    <script src="frontend.js"></script>
+</body>
+</html>
