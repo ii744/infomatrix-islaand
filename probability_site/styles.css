@@ -1,0 +1,607 @@
+/* Основні стилі */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    color: #333;
+}
+
+/* Header */
+header {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 30px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+    font-size: 2.5em;
+    color: #667eea;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    font-size: 1.2em;
+    color: #666;
+    font-style: italic;
+}
+
+/* Navigation */
+nav {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 15px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.nav-menu {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.nav-link {
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    text-decoration: none;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+    font-weight: 600;
+}
+
+.nav-link:hover, .nav-link.active {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+/* Main content */
+main {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+.section {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    display: none;
+    animation: fadeIn 0.5s ease;
+}
+
+.section.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.section h2 {
+    color: #667eea;
+    margin-bottom: 30px;
+    font-size: 2em;
+    border-bottom: 3px solid #667eea;
+    padding-bottom: 10px;
+}
+
+/* Concept Cards */
+.concept-card {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 20px;
+    border-left: 5px solid #667eea;
+}
+
+.concept-card h3 {
+    color: #764ba2;
+    margin-bottom: 15px;
+    font-size: 1.4em;
+}
+
+.concept-card p {
+    margin: 10px 0;
+    line-height: 1.6;
+}
+
+.example {
+    background: rgba(102, 126, 234, 0.1);
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 15px;
+    border-left: 3px solid #667eea;
+}
+
+.formula {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 1.8em;
+    font-weight: bold;
+    margin: 20px 0;
+    font-family: 'Courier New', monospace;
+}
+
+.formula-small {
+    background: #f0f0f0;
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: bold;
+    margin: 15px 0;
+}
+
+/* Event Types */
+.event-types {
+    list-style: none;
+    padding: 0;
+}
+
+.event-types li {
+    padding: 15px;
+    margin: 10px 0;
+    background: white;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.event-badge {
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-weight: bold;
+    color: white;
+}
+
+.event-badge.certain {
+    background: #4CAF50;
+}
+
+.event-badge.impossible {
+    background: #f44336;
+}
+
+.event-badge.random {
+    background: #FF9800;
+}
+
+/* Operations */
+.operations {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+}
+
+.operation {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+}
+
+.operation h4 {
+    color: #667eea;
+    margin-bottom: 10px;
+}
+
+/* Calculator */
+.calc-tabs, .simulator-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.calc-tab, .sim-tab {
+    padding: 12px 24px;
+    background: #e0e0e0;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.calc-tab:hover, .sim-tab:hover {
+    background: #c0c0c0;
+}
+
+.calc-tab.active, .sim-tab.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.calculator, .simulator {
+    display: none;
+    background: #f9f9f9;
+    padding: 30px;
+    border-radius: 15px;
+    animation: fadeIn 0.3s ease;
+}
+
+.calculator.active, .simulator.active {
+    display: block;
+}
+
+.calculator h3, .simulator h3 {
+    color: #667eea;
+    margin-bottom: 20px;
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #555;
+}
+
+.input-group input, .input-group select {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 1em;
+    transition: border-color 0.3s ease;
+}
+
+.input-group input:focus, .input-group select:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.calc-btn, .sim-btn {
+    padding: 15px 40px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+}
+
+.calc-btn:hover, .sim-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+}
+
+.result {
+    margin-top: 25px;
+    padding: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 10px;
+    font-size: 1.2em;
+    font-weight: bold;
+    text-align: center;
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Hypothesis inputs */
+.hypothesis-input {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+.hypothesis-input h4 {
+    color: #764ba2;
+    margin-bottom: 10px;
+}
+
+.hypothesis-input input {
+    width: calc(50% - 10px);
+    margin: 5px;
+}
+
+/* Coin Animation */
+.coin-container {
+    perspective: 1000px;
+    margin: 30px auto;
+    width: 150px;
+    height: 150px;
+}
+
+.coin {
+    width: 150px;
+    height: 150px;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 1s ease;
+    margin: 0 auto;
+}
+
+.coin.flipping {
+    animation: flip 1s ease;
+}
+
+@keyframes flip {
+    0% { transform: rotateY(0); }
+    100% { transform: rotateY(1800deg); }
+}
+
+.coin-face {
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3em;
+    font-weight: bold;
+    backface-visibility: hidden;
+}
+
+.coin-face.heads {
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+    color: #8B4513;
+    border: 5px solid #DAA520;
+}
+
+.coin-face.tails {
+    background: linear-gradient(135deg, #C0C0C0 0%, #808080 100%);
+    color: #404040;
+    border: 5px solid #A9A9A9;
+    transform: rotateY(180deg);
+}
+
+/* Dice */
+.dice-container {
+    perspective: 1000px;
+    margin: 30px auto;
+    width: 100px;
+    height: 100px;
+}
+
+.dice {
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, #fff 0%, #e0e0e0 100%);
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4em;
+    margin: 0 auto;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+}
+
+.dice.rolling {
+    animation: roll 0.5s ease;
+}
+
+@keyframes roll {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(90deg); }
+    50% { transform: rotate(180deg); }
+    75% { transform: rotate(270deg); }
+}
+
+/* Charts */
+.chart {
+    margin-top: 30px;
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+}
+
+.bar-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+
+.bar-item {
+    text-align: center;
+    min-width: 60px;
+}
+
+.bar {
+    background: linear-gradient(to top, #667eea 0%, #764ba2 100%);
+    width: 40px;
+    margin: 0 auto;
+    border-radius: 5px 5px 0 0;
+    transition: height 0.5s ease;
+}
+
+.bar-label {
+    margin-top: 5px;
+    font-weight: bold;
+    color: #666;
+}
+
+.bar-value {
+    font-size: 0.9em;
+    color: #999;
+}
+
+/* Quiz */
+.quiz-progress {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 30px;
+}
+
+#question-text {
+    font-size: 1.3em;
+    color: #333;
+    margin-bottom: 25px;
+    line-height: 1.6;
+}
+
+.option-btn {
+    width: 100%;
+    padding: 18px;
+    margin: 10px 0;
+    background: white;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1em;
+    text-align: left;
+    transition: all 0.3s ease;
+}
+
+.option-btn:hover {
+    background: #f0f0f0;
+    border-color: #667eea;
+}
+
+.option-btn.selected {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+}
+
+.option-btn.correct {
+    background: #4CAF50;
+    color: white;
+    border-color: #4CAF50;
+}
+
+.option-btn.incorrect {
+    background: #f44336;
+    color: white;
+    border-color: #f44336;
+}
+
+.quiz-controls {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+}
+
+.quiz-btn {
+    padding: 12px 30px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.quiz-btn:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.quiz-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.quiz-results {
+    text-align: center;
+    padding: 30px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    border-radius: 15px;
+    margin-top: 30px;
+}
+
+.quiz-results h3 {
+    color: #667eea;
+    margin-bottom: 20px;
+    font-size: 1.5em;
+}
+
+#score {
+    font-size: 2em;
+    font-weight: bold;
+    color: #764ba2;
+    margin: 20px 0;
+}
+
+.restart-btn {
+    margin-top: 20px;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Footer */
+footer {
+    background: rgba(255, 255, 255, 0.95);
+    text-align: center;
+    padding: 20px;
+    margin-top: 50px;
+    color: #666;
+}
+
+footer p {
+    margin: 5px 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 1.8em;
+    }
+
+    .section {
+        padding: 20px;
+    }
+
+    .formula {
+        font-size: 1.3em;
+    }
+
+    .nav-link {
+        padding: 10px 18px;
+        font-size: 0.9em;
+    }
+
+    .operations {
+        grid-template-columns: 1fr;
+    }
+
+    .hypothesis-input input {
+        width: 100%;
+        margin: 5px 0;
+    }
+}

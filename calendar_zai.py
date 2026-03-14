@@ -1,30 +1,26 @@
 import os
 import ssl
+import subprocess
 
 # ==========================================
-# 1. АБСОЛЮТНИЙ АНТИ-ПРОКСІ БЛОК ДЛЯ macOS
+# 1. АБСОЛЮТНИЙ АНТИ-ПРОКСІ БЛОК
 # ==========================================
-# Ця зірочка каже системі: "Забудь про проксі для будь-яких адрес взагалі"
 os.environ['NO_PROXY'] = '*'
 os.environ['no_proxy'] = '*'
-
-# Очищаємо залишки
 os.environ['http_proxy'] = ''
 os.environ['https_proxy'] = ''
 os.environ['HTTP_PROXY'] = ''
 os.environ['HTTPS_PROXY'] = ''
-
-# Вимикаємо перевірку сертифікатів
 os.environ['REQUESTS_CA_BUNDLE'] = ''
 os.environ['CURL_CA_BUNDLE'] = ''
 ssl._create_default_https_context = ssl._create_unverified_context
 
 # ==========================================
-# 2. ВСІ ІНШІ ІМПОРТИ
+# 2. ІМПОРТИ
 # ==========================================
 import datetime
 import io
-import re
+import json
 import PyPDF2
 from dotenv import load_dotenv
 from google.auth.transport.requests import Request
@@ -34,146 +30,136 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseDownload
 from zai import ZaiClient
 
-# Завантажуємо змінні з файлу .env
 load_dotenv()
 
-# ==========================================
-# НАЛАШТУВАННЯ ПРОМПТА
-# ==========================================
-PROMPT_TEMPLATE = """Ти експерт зі створення інтерактивних навчальних матеріалів.
-Створи єдиний інтерактивний сайт-навчання (де HTML, CSS та JS знаходяться в одному файлі) на основі наданого матеріалу. 
-Сайт має бути красивим, з тестами або вікторинами для перевірки знань.
-ВАЖЛИВО: Поверни весь фінальний код сайту всередині блоку ```html ... ```.
+SCOPES = ['https://www.googleapis.com/auth/calendar.readonly', 'https://www.googleapis.com/auth/drive.readonly']
+ZAI_API_KEY = os.getenv("ZAI_API_KEY")
+client = ZaiClient(api_key=ZAI_API_KEY)
 
-Ось матеріал для вивчення:
-{text}"""
-# ==========================================
+# =========================================================
+# НОВІ ІНСТРУМЕНТИ АГЕНТА (COMPUTER USE)
+# =========================================================
 
-SCOPES = [
-    'https://www.googleapis.com/auth/calendar.readonly',
-    'https://www.googleapis.com/auth/drive.readonly'
+def execute_terminal_command(command):
+    """Виконує будь-яку команду в терміналі і повертає результат."""
+    print(f"   [Термінал] Виконую: {command}")
+    try:
+        result = subprocess.run(command, shell=True, capture_output=True, text=True, timeout=120)
+        output = result.stdout if result.stdout else result.stderr
+        return output[:4000] if output else "Команда виконана успішно (без виводу)."
+    except Exception as e:
+        return f"Помилка виконання: {str(e)}"
+
+def read_file_content(filepath):
+    """Читає вміст будь-якого локального файлу."""
+    print(f"   [Файлова система] Читаю: {filepath}")
+    try:
+        with open(filepath, 'r', encoding='utf-8') as f:
+            return f.read()[:8000]
+    except Exception as e:
+        return f"Помилка читання: {str(e)}"
+
+def write_to_file(filepath, content):
+    """Створює або перезаписує файл із заданим контентом."""
+    print(f"   [Файлова система] Записую у: {filepath}")
+    try:
+        # Автоматично створюємо папки, якщо їх ще немає
+        os.makedirs(os.path.dirname(filepath) or '.', exist_ok=True)
+        with open(filepath, 'w', encoding='utf-8') as f:
+            f.write(content)
+        return f"Файл {filepath} успішно створено/оновлено."
+    except Exception as e:
+        return f"Помилка запису: {str(e)}"
+
+def get_calendar_events():
+    creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+    service = build('calendar', 'v3', credentials=creds)
+    now = datetime.datetime.utcnow().isoformat() + 'Z'
+    events_result = service.events().list(calendarId='primary', timeMin=now, maxResults=1, singleEvents=True, orderBy='startTime').execute()
+    events = events_result.get('items', [])
+    return json.dumps(events[0]) if events else "Подій не знайдено."
+
+def read_pdf_from_drive(file_id):
+    creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+    drive_service = build('drive', 'v3', credentials=creds)
+    request = drive_service.files().get_media(fileId=file_id)
+    fh = io.BytesIO()
+    downloader = MediaIoBaseDownload(fh, request)
+    done = False
+    while not done:
+        _, done = downloader.next_chunk()
+    fh.seek(0)
+    pdf_reader = PyPDF2.PdfReader(fh)
+    text = "".join([page.extract_text() for page in pdf_reader.pages])
+    return text[:8000] 
+
+# JSON схеми для GLM-5
+tools = [
+    {"type": "function", "function": {"name": "get_calendar_events", "description": "Отримати задачу з Google Календаря"}},
+    {"type": "function", "function": {"name": "read_pdf_from_drive", "description": "Прочитати текст PDF", "parameters": {"type": "object", "properties": {"file_id": {"type": "string"}}, "required": ["file_id"]}}},
+    {"type": "function", "function": {"name": "execute_terminal_command", "description": "Виконати команду bash/zsh в терміналі (наприклад, npm install, mkdir, ls). Використовуй це для ініціалізації проєктів.", "parameters": {"type": "object", "properties": {"command": {"type": "string"}}, "required": ["command"]}}},
+    {"type": "function", "function": {"name": "read_file_content", "description": "Прочитати код або текст із локального файлу", "parameters": {"type": "object", "properties": {"filepath": {"type": "string"}}, "required": ["filepath"]}}},
+    {"type": "function", "function": {"name": "write_to_file", "description": "Записати згенерований код у файл. Підтримує створення нових файлів.", "parameters": {"type": "object", "properties": {"filepath": {"type": "string"}, "content": {"type": "string"}}, "required": ["filepath", "content"]}}}
 ]
 
-def main():
-    api_key = os.getenv("ZAI_API_KEY")
-    if not api_key:
-        print("❌ Помилка: Ключ ZAI_API_KEY не знайдено! Переконайся, що ти створила файл .env і додала туди ключ.")
-        return
+# =========================================================
+# АГЕНТНИЙ ЦИКЛ (RE-ACT)
+# =========================================================
 
-    creds = None
-    if os.path.exists('token.json'):
-        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+def run_agent(user_prompt):
+    messages = [
+        {"role": "system", "content": "Ти автономний AI-розробник. Твоя ціль — розгортати повноцінні веб-проєкти (наприклад, Next.js чи HTML/CSS/JS) використовуючи термінал та файлову систему. Крок за кроком думай, виконуй команди термінала, створюй папки, читай та пиши файли, поки проєкт не буде повністю готовий."},
+        {"role": "user", "content": user_prompt}
+    ]
+    
+    print("\n🚀 Запускаю автономного агента...")
+    
+    # Захист від нескінченного циклу (максимум 15 кроків)
+    for step in range(15):
+        print(f"\n--- Крок {step + 1} ---")
+        response = client.chat.completions.create(
+            model="glm-5",
+            messages=messages,
+            tools=tools,
+            thinking={"type": "enabled"}
+        )
         
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
-            creds = flow.run_local_server(port=0)
-        with open('token.json', 'w') as token:
-            token.write(creds.to_json())
-
-    try:
-        calendar_service = build('calendar', 'v3', credentials=creds)
-        drive_service = build('drive', 'v3', credentials=creds)
+        msg = response.choices[0].message
         
-        now = datetime.datetime.utcnow().isoformat() + 'Z'  
-        print('Шукаю задачі з PDF-файлами...\n')
-        
-        events_result = calendar_service.events().list(
-            calendarId='primary', timeMin=now,
-            maxResults=1, singleEvents=True,
-            orderBy='startTime'
-        ).execute()
-        events = events_result.get('items', [])
-
-        if not events:
-            print('Немає найближчих подій.')
-            return
-
-        for event in events:
-            print(f"🎯 Задача: {event.get('summary', 'Без назви')}")
-            attachments = event.get('attachments', [])
+        # Виводимо думки агента
+        if getattr(msg, 'reasoning_content', None):
+            print(f"💭 Думка: {msg.reasoning_content.strip()}")
             
-            if attachments:
-                for file in attachments:
-                    file_id = file.get('fileId')
-                    mime_type = file.get('mimeType', '')
-                    
-                    if file_id and 'pdf' in mime_type.lower():
-                        print(f"   ⬇️ Завантажую PDF файл...")
-                        request = drive_service.files().get_media(fileId=file_id)
-                        fh = io.BytesIO()
-                        downloader = MediaIoBaseDownload(fh, request)
-                        done = False
-                        while not done:
-                            status, done = downloader.next_chunk()
-                        
-                        print("   📖 Читаю текст із PDF...")
-                        fh.seek(0)
-                        pdf_reader = PyPDF2.PdfReader(fh)
-                        extracted_text = ""
-                        for page in pdf_reader.pages:
-                            extracted_text += page.extract_text() + "\n"
-                        
-                        context_text = extracted_text[:8000]
-                        
-                        print("   🧠 Запускаю агента GLM-5...\n")
-                        client = ZaiClient(api_key=api_key) 
-                        
-                        # Формуємо фінальний промпт, підставляючи текст із PDF
-                        prompt = PROMPT_TEMPLATE.format(text=context_text)
-                        
-                        response = client.chat.completions.create(
-                            model="glm-5",
-                            messages=[
-                                {"role": "user", "content": prompt}
-                            ],
-                            thinking={
-                                "type": "enabled",
-                            },
-                            stream=True,
-                            max_tokens=8192,
-                            temperature=0.7,
-                        )
+        messages.append(msg)
 
-                        print("--- 💭 ПРОЦЕС МИСЛЕННЯ АГЕНТА ---")
-                        thinking_finished = False
-                        full_content = ""
-                        
-                        for chunk in response:
-                            reasoning = getattr(chunk.choices[0].delta, 'reasoning_content', None)
-                            if reasoning:
-                                print(reasoning, end="", flush=True)
-                                
-                            content = getattr(chunk.choices[0].delta, 'content', None)
-                            if content:
-                                if not thinking_finished:
-                                    print("\n\n--- 🚀 ГЕНЕРАЦІЯ САЙТУ ---\n")
-                                    thinking_finished = True
-                                print(content, end="", flush=True)
-                                full_content += content
-                                
-                        print("\n\n✅ Зберігаю результат у файл...")
-                        
-                        # Шукаємо HTML код у відповіді ШІ
-                        html_match = re.search(r"```html\n(.*?)```", full_content, re.DOTALL)
-                        if html_match:
-                            html_code = html_match.group(1)
-                        else:
-                            # Якщо модель не використала маркдаун, пробуємо зберегти все як є, очистивши від зайвого
-                            html_code = full_content.replace("```html", "").replace("```", "").strip()
-                            
-                        # Зберігаємо файл у поточну папку
-                        with open("index.html", "w", encoding="utf-8") as f:
-                            f.write(html_code)
-                            
-                        print("\n🎉 Файл index.html успішно створено! Відкрий його у своєму браузері.")
-            else:
-                print("📎 Вкладень немає.")
+        # Якщо агент більше не використовує інструменти, значить він закінчив
+        if not msg.tool_calls:
+            print("\n✅ Завдання виконано!")
+            return msg.content
 
-    except Exception as e:
-        print(f'Виникла помилка: {e}')
+        # Виконання інструментів
+        for tool_call in msg.tool_calls:
+            name = tool_call.function.name
+            args = json.loads(tool_call.function.arguments)
+            
+            print(f"🛠 Дія: {name}({args})")
+            
+            if name == "get_calendar_events": result = get_calendar_events()
+            elif name == "read_pdf_from_drive": result = read_pdf_from_drive(args.get('file_id'))
+            elif name == "execute_terminal_command": result = execute_terminal_command(args.get('command'))
+            elif name == "read_file_content": result = read_file_content(args.get('filepath'))
+            elif name == "write_to_file": result = write_to_file(args.get('filepath'), args.get('content'))
+            else: result = "Невідома функція"
+            
+            messages.append({
+                "role": "tool",
+                "tool_call_id": tool_call.id,
+                "content": str(result)
+            })
+            
+    return "Агент зупинено (перевищено ліміт кроків)."
 
-if __name__ == '__main__':
-    main()
+if __name__ == "__main__":
+    task = "1. Перевір календар і знайди PDF. 2. Прочитай його. 3. Використай термінал, щоб створити папку 'probability_site'. 4. Згенеруй туди структуру файлів (HTML, CSS, JS) для інтерактивного навчання. 5. Переконайся, що файли створено успішно."
+    final_answer = run_agent(task)
+    print(f"\nФінальний звіт:\n{final_answer}")

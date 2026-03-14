@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Теорія ймовірностей - Інтерактивне навчання</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>🎲 Теорія ймовірностей</h1>
+        <p class="subtitle">Інтерактивний навчальний посібник</p>
+    </header>
+
+    <nav>
+        <ul class="nav-menu">
+            <li><a href="#basics" class="nav-link active">Основні поняття</a></li>
+            <li><a href="#calculator" class="nav-link">Калькулятор</a></li>
+            <li><a href="#simulator" class="nav-link">Симулятор</a></li>
+            <li><a href="#quiz" class="nav-link">Тест</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <!-- Розділ 1: Основні поняття -->
+        <section id="basics" class="section active">
+            <h2>📚 Основні поняття теорії ймовірностей</h2>
+            
+            <div class="concept-card">
+                <h3>Експеримент та події</h3>
+                <p><strong>Експеримент</strong> - випробування, яке можна повторити за незмінних умов.</p>
+                <p><strong>Випадкова подія</strong> - результат експерименту, який може статися чи не статися.</p>
+                <div class="example">
+                    <strong>Приклад:</strong> Підкидання монети - експеримент. Випадання "герба" - випадкова подія.
+                </div>
+            </div>
+
+            <div class="concept-card">
+                <h3>Класичне означення ймовірності</h3>
+                <div class="formula">
+                    P(A) = m / n
+                </div>
+                <p>де m - число сприятливих результатів, n - загальне число рівноможливих результатів.</p>
+            </div>
+
+            <div class="concept-card">
+                <h3>Типи подій</h3>
+                <ul class="event-types">
+                    <li><span class="event-badge certain">Достовірна</span> - обов'язково станеться (P = 1)</li>
+                    <li><span class="event-badge impossible">Неможлива</span> - ніколи не станеться (P = 0)</li>
+                    <li><span class="event-badge random">Випадкова</span> - може статися чи ні (0 < P < 1)</li>
+                </ul>
+            </div>
+
+            <div class="concept-card">
+                <h3>Операції над подіями</h3>
+                <div class="operations">
+                    <div class="operation">
+                        <h4>Сума подій (A ∪ B)</h4>
+                        <p>Сталася хоча б одна з подій A або B</p>
+                    </div>
+                    <div class="operation">
+                        <h4>Добуток подій (A ∩ B)</h4>
+                        <p>Сталися обидві події A і B</p>
+                    </div>
+                    <div class="operation">
+                        <h4>Різниця подій (A \ B)</h4>
+                        <p>Сталася A, але не сталася B</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Розділ 2: Калькулятор -->
+        <section id="calculator" class="section">
+            <h2>🧮 Калькулятор ймовірностей</h2>
+            
+            <div class="calc-tabs">
+                <button class="calc-tab active" data-calc="classical">Класична ймовірність</button>
+                <button class="calc-tab" data-calc="combination">Комбінаторика</button>
+                <button class="calc-tab" data-calc="bayes">Формула Байєса</button>
+            </div>
+
+            <!-- Класична ймовірність -->
+            <div id="classical-calc" class="calculator active">
+                <h3>Класична ймовірність</h3>
+                <div class="input-group">
+                    <label>Кількість сприятливих результатів (m):</label>
+                    <input type="number" id="favorable" min="0" value="1">
+                </div>
+                <div class="input-group">
+                    <label>Загальна кількість результатів (n):</label>
+                    <input type="number" id="total" min="1" value="6">
+                </div>
+                <button class="calc-btn" onclick="calculateClassical()">Обчислити</button>
+                <div id="classical-result" class="result"></div>
+            </div>
+
+            <!-- Комбінаторика -->
+            <div id="combination-calc" class="calculator">
+                <h3>Комбінаторика</h3>
+                <div class="input-group">
+                    <label>Тип обчислення:</label>
+                    <select id="combo-type">
+                        <option value="permutation">Перестановки (P<sub>n</sub>)</option>
+                        <option value="arrangement">Розміщення (A<sub>n</sub><sup>k</sup>)</option>
+                        <option value="combination" selected>Сполучення (C<sub>n</sub><sup>k</sup>)</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>n (загальна кількість):</label>
+                    <input type="number" id="combo-n" min="1" value="10">
+                </div>
+                <div class="input-group" id="k-input">
+                    <label>k (кількість для вибору):</label>
+                    <input type="number" id="combo-k" min="1" value="3">
+                </div>
+                <button class="calc-btn" onclick="calculateCombination()">Обчислити</button>
+                <div id="combo-result" class="result"></div>
+            </div>
+
+            <!-- Формула Байєса -->
+            <div id="bayes-calc" class="calculator">
+                <h3>Формула Байєса</h3>
+                <p class="formula-small">P(H<sub>i</sub>|A) = P(A|H<sub>i</sub>)·P(H<sub>i</sub>) / P(A)</p>
+                
+                <div class="input-group">
+                    <label>Кількість гіпотез:</label>
+                    <input type="number" id="hypotheses-count" min="2" max="5" value="2">
+                </div>
+                
+                <div id="hypotheses-inputs">
+                    <div class="hypothesis-input">
+                        <h4>Гіпотеза H₁</h4>
+                        <input type="number" class="hyp-prob" placeholder="P(H₁)" step="0.01" value="0.4">
+                        <input type="number" class="hyp-conditional" placeholder="P(A|H₁)" step="0.01" value="0.7">
+                    </div>
+                    <div class="hypothesis-input">
+                        <h4>Гіпотеза H₂</h4>
+                        <input type="number" class="hyp-prob" placeholder="P(H₂)" step="0.01" value="0.6">
+                        <input type="number" class="hyp-conditional" placeholder="P(A|H₂)" step="0.01" value="0.3">
+                    </div>
+                </div>
+                
+                <button class="calc-btn" onclick="calculateBayes()">Обчислити</button>
+                <div id="bayes-result" class="result"></div>
+            </div>
+        </section>
+
+        <!-- Розділ 3: Симулятор -->
+        <section id="simulator" class="section">
+            <h2>🎯 Симулятор експериментів</h2>
+            
+            <div class="simulator-tabs">
+                <button class="sim-tab active" data-sim="coin">Монета</button>
+                <button class="sim-tab" data-sim="dice">Кубик</button>
+                <button class="sim-tab" data-sim="urn">Урна</button>
+            </div>
+
+            <!-- Симуляція монети -->
+            <div id="coin-sim" class="simulator active">
+                <h3>🪙 Підкидання монети</h3>
+                <div class="coin-container">
+                    <div id="coin" class="coin">
+                        <div class="coin-face heads">Г</div>
+                        <div class="coin-face tails">Ц</div>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Кількість підкидань:</label>
+                    <input type="number" id="coin-flips" min="1" max="1000" value="100">
+                </div>
+                <button class="sim-btn" onclick="simulateCoin()">Підкинути</button>
+                <div id="coin-result" class="result"></div>
+                <div id="coin-chart" class="chart"></div>
+            </div>
+
+            <!-- Симуляція кубика -->
+            <div id="dice-sim" class="simulator">
+                <h3>🎲 Кидання кубика</h3>
+                <div class="dice-container">
+                    <div id="dice" class="dice">⚀</div>
+                </div>
+                <div class="input-group">
+                    <label>Кількість кидань:</label>
+                    <input type="number" id="dice-rolls" min="1" max="1000" value="100">
+                </div>
+                <button class="sim-btn" onclick="simulateDice()">Кинути</button>
+                <div id="dice-result" class="result"></div>
+                <div id="dice-chart" class="chart"></div>
+            </div>
+
+            <!-- Симуляція урни -->
+            <div id="urn-sim" class="simulator">
+                <h3>🏺 Вибір з урни</h3>
+                <div class="input-group">
+                    <label>Кількість білих кульок:</label>
+                    <input type="number" id="white-balls" min="0" value="3">
+                </div>
+                <div class="input-group">
+                    <label>Кількість чорних кульок:</label>
+                    <input type="number" id="black-balls" min="0" value="2">
+                </div>
+                <div class="input-group">
+                    <label>Скільки кульок витягнути:</label>
+                    <input type="number" id="draw-count" min="1" value="2">
+                </div>
+                <div class="input-group">
+                    <label>Кількість експериментів:</label>
+                    <input type="number" id="urn-experiments" min="1" max="1000" value="100">
+                </div>
+                <button class="sim-btn" onclick="simulateUrn()">Експеримент</button>
+                <div id="urn-result" class="result"></div>
+                <div id="urn-chart" class="chart"></div>
+            </div>
+        </section>
+
+        <!-- Розділ 4: Тест -->
+        <section id="quiz" class="section">
+            <h2>📝 Тестові завдання</h2>
+            
+            <div id="quiz-container">
+                <div class="quiz-progress">
+                    Питання <span id="current-q">1</span> з <span id="total-q">5</span>
+                </div>
+                
+                <div id="question-container">
+                    <h3 id="question-text"></h3>
+                    <div id="options-container"></div>
+                </div>
+
+                <div class="quiz-controls">
+                    <button id="prev-btn" class="quiz-btn" onclick="prevQuestion()" disabled>← Попереднє</button>
+                    <button id="next-btn" class="quiz-btn" onclick="nextQuestion()">Наступне →</button>
+                </div>
+
+                <div id="quiz-results" class="quiz-results hidden">
+                    <h3>Результати тесту</h3>
+                    <div id="score"></div>
+                    <button class="quiz-btn restart-btn" onclick="restartQuiz()">Пройти знову</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>📚 На основі навчального посібника КПІ ім. Ігоря Сікорського</p>
+        <p>© 2026 Інтерактивний навчальний посібник з теорії ймовірностей</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

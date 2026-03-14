@@ -1,8 +1,12 @@
 import os
 import json
-import random  # Додали для випадкового вибору
+import random
+import threading # Додали для фонової генерації
+import time
 from mitmproxy import http
 
+# Імпортуємо нашого агента (переконайся, що файл agent_matrix.py лежить у цій же папці)
+import agent_matrix
 
 class KairosProxy:
     def __init__(self):
@@ -12,7 +16,10 @@ class KairosProxy:
         self.settings_html = "index-ai.html"
         self.settings_css = "style-ai.css"
 
-        # Список твоїх цитат
+        # --- Змінні для ШІ-генерації ---
+        self.is_generating = False
+        self.generated_lesson_html = None
+
         self.quotes = [
             {"text": "«Не витрачай час на ХУЙНЮ»", "author": "Ірина Сацюк"},
             {"text": "«Не важно»", "author": "Ірина Сацюк"},
@@ -43,10 +50,36 @@ class KairosProxy:
         with open(self.blocked_sites_file, "w") as f:
             json.dump(self.target_sites, f)
 
+    # --- Фонова задача для агента ---
+    def generate_lesson_bg(self):
+        if self.is_generating:
+            return # Якщо вже генерується, не запускаємо вдруге
+        
+        self.is_generating = True
+        self.generated_lesson_html = None
+        
+        try:
+            print("🤖 [Kairos] Запускаю ШІ-агента...")
+            task = "1. Перевір календар і знайди PDF. 2. Прочитай його. 3. Згенеруй єдиний інтерактивний HTML-файл для навчання на основі матеріалу. 4. Збережи його як lesson.html"
+            
+            # Викликаємо нашого агента
+            agent_matrix.run_agent(task)
+            
+            # Після того, як агент закінчив, читаємо створений ним файл
+            if os.path.exists("lesson.html"):
+                with open("lesson.html", "r", encoding="utf-8") as f:
+                    self.generated_lesson_html = f.read()
+                print("✅ [Kairos] Навчальний сайт успішно згенеровано і завантажено в пам'ять!")
+            else:
+                print("❌ [Kairos] Агент завершив роботу, але файл lesson.html не знайдено.")
+        except Exception as e:
+            print(f"❌ [Kairos] Помилка під час генерації: {e}")
+        finally:
+            self.is_generating = False
+
     def request(self, flow: http.HTTPFlow) -> None:
         host = flow.request.pretty_host
 
-        # --- 1. Керування через kairos.api ---
         # --- 1. Керування через kairos.api ---
         if host == "kairos.api":
             if flow.request.path == "/" or flow.request.path == "/index.html":
@@ -54,20 +87,14 @@ class KairosProxy:
                     content = f.read()
                 flow.response = http.Response.make(200, content, {"Content-Type": "text/html; charset=utf-8"})
             
-            # 👇 ОСЬ ЦЕЙ БЛОК ТРЕБА ДОДАТИ 👇
             elif flow.request.path == "/index-settings.html":
                 with open("index-settings.html", "r", encoding="utf-8") as f:
                     content = f.read()
                 flow.response = http.Response.make(200, content, {"Content-Type": "text/html; charset=utf-8"})
-            # 👆 КІНЕЦЬ НОВОГО БЛОКУ 👆
 
             elif flow.request.path == "/get_sites" and flow.request.method == "GET":
-                # Перетворюємо список сайтів у JSON-формат
                 sites_json = json.dumps(self.target_sites)
-                flow.response = http.Response.make(200, sites_json.encode('utf-8'), {
-                    "Content-Type": "application/json", 
-                    "Access-Control-Allow-Origin": "*"
-                })
+                flow.response = http.Response.make(200, sites_json.encode('utf-8'), {"Content-Type": "application/json", "Access-Control-Allow-Origin": "*"})
 
             elif "style.css" in flow.request.path:
                 with open(self.settings_css, "r", encoding="utf-8") as f:
@@ -75,20 +102,14 @@ class KairosProxy:
                 flow.response = http.Response.make(200, content, {"Content-Type": "text/css"})
 
             elif flow.request.path.startswith("/img/"):
-                # Прибираємо початковий слеш, щоб шлях вказував на локальну папку (наприклад, img/setting.png)
                 image_path = flow.request.path.lstrip("/")
                 try:
                     with open(image_path, "rb") as f:
                         content = f.read()
-                    
-                    # Визначаємо правильний Content-Type
                     content_type = "image/png" if image_path.endswith(".png") else "image/jpeg"
-                    
                     flow.response = http.Response.make(200, content, {"Content-Type": content_type})
                 except FileNotFoundError:
-                    # Якщо картинки немає в папці, повертаємо помилку 404
                     flow.response = http.Response.make(404, b"Image not found")
-            # 👆 КІНЕЦЬ НОВОГО БЛОКУ 👆
 
             elif flow.request.path == "/add" and flow.request.method == "POST":
                 try:
@@ -100,12 +121,25 @@ class KairosProxy:
                     flow.response = http.Response.make(200, b"Success", {"Access-Control-Allow-Origin": "*"})
                 except:
                     flow.response = http.Response.make(400, b"Error")
-        
-        
+
+            # 👇 НОВИЙ ЕНДПОІНТ ДЛЯ ПЕРЕВІРКИ ГОТОВНОСТІ УРОКУ 👇
+            elif flow.request.path == "/check_lesson":
+                if self.generated_lesson_html:
+                    # Якщо урок готовий, віддаємо його HTML-код і скидаємо кеш
+                    lesson = self.generated_lesson_html
+                    self.generated_lesson_html = None # Щоб наступного разу генерувало новий
+                    flow.response = http.Response.make(200, lesson, {"Content-Type": "text/html; charset=utf-8", "Access-Control-Allow-Origin": "*"})
+                else:
+                    # Якщо ще не готово, повертаємо статус 202 (Accepted)
+                    flow.response = http.Response.make(202, b"Generating...", {"Access-Control-Allow-Origin": "*"})
+
 
         # --- 2. Логіка блокування ---
         elif any(site in host for site in self.target_sites):
-            # Обираємо випадкову цитату
+            # Запускаємо ШІ-агента у фоновому режимі (якщо він ще не працює)
+            if not self.is_generating:
+                threading.Thread(target=self.generate_lesson_bg).start()
+
             selected = random.choice(self.quotes)
             
             html_block = f"""
@@ -145,12 +179,46 @@ class KairosProxy:
             text-decoration: none;
             font-weight: bold;
         }}
+        .loader {{
+            margin-top: 40px;
+            font-size: 1.2em;
+            color: #2ecc71;
+            text-align: center;
+        }}
     </style>
 </head>
 <body>
     <div class="quote">{selected['text']}</div>
     <div class="author">{selected['author']}</div>
-    <p style='text-align:center;'><a href='http://kairos.api/tree' class="nav-link">Ваше дерево</a></p>
+    <p style='text-align:center;'><a href='http://kairos.api/' class="nav-link">Налаштування Kairos</a></p>
+    
+    <div class="loader">
+        🤖 ШІ аналізує ваші задачі і створює навчальний сайт... <span id="dots"></span>
+    </div>
+
+    <script>
+        // Анімація крапок
+        let dots = 0;
+        setInterval(() => {{
+            dots = (dots + 1) % 4;
+            document.getElementById('dots').innerText = '.'.repeat(dots);
+        }}, 500);
+
+        // Опитування сервера: чи готовий урок?
+        setInterval(() => {{
+            fetch('http://kairos.api/check_lesson')
+            .then(res => {{
+                if (res.status === 200) {{
+                    // Якщо сервер повернув 200 OK, значить прийшов HTML-код уроку!
+                    res.text().then(html => {{
+                        document.open();
+                        document.write(html);
+                        document.close();
+                    }});
+                }}
+            }});
+        }}, 3000); // Перевіряємо кожні 3 секунди
+    </script>
 </body>
 </html>
             """
