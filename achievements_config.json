@@ -1,0 +1,42 @@
+{
+    "tasks_1": {
+        "type": "counter",
+        "key": "tasks_completed",
+        "threshold": 1,
+        "name": "Вперед до цілі!",
+        "description": "Ви виконали перше завдання. Чудовий старт!",
+        "icons": "icons/task1.png"
+    },
+    "tasks_5": {
+        "type": "counter",
+        "key": "tasks_completed",
+        "threshold": 5,
+        "name": "Головне - старатись",
+        "description": "П'ять завдань позаду. Ви стаєте профі!",
+        "icons": "icons/task5.png"
+    },
+    "streak_1": {
+        "type": "streak",
+        "key": "daily",
+        "threshold": 1,
+        "name": "Перший успішний",
+        "description": "Перший день з програмою. Так тримати!",
+        "icons": "icons/day1.png"
+    },
+    "streak_2": {
+        "type": "streak",
+        "key": "daily",
+        "threshold": 2,
+        "name": "Два підряд",
+        "description": "Другий день поспіль! Ви входите в азарт.",
+        "icons": "icons/day2.png"
+    },
+    "streak_7": {
+        "type": "streak",
+        "key": "daily",
+        "threshold": 7,
+        "name": "Тижневий чемпіон",
+        "description": "Цілий тиждень поспіль! Ви справжній чемпіон!",
+        "icons": "icons/week1.png"
+    }
+}
