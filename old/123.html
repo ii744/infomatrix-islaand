@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Теорія ймовірностей на Canvas</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: #f3e5f5; 
+            color: #333; 
+            margin: 0; 
+            padding: 20px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container { 
+            max-width: 800px; 
+            width: 100%;
+            background: white; 
+            padding: 30px; 
+            border-radius: 15px; 
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1); 
+            text-align: center;
+        }
+        h1, h2 { color: #6a1b9a; }
+        .description {
+            text-align: left;
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #fdfbfd;
+            border-left: 4px solid #ab47bc;
+            border-radius: 4px;
+        }
+        .btn { 
+            background-color: #ab47bc; 
+            color: white; 
+            border: none; 
+            padding: 10px 20px; 
+            font-size: 15px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            transition: 0.3s; 
+            margin: 5px; 
+        }
+        .btn:hover { background-color: #8e24aa; }
+        .btn.active { background-color: #4a148c; box-shadow: inset 0 3px 5px rgba(0,0,0,0.2); }
+        canvas {
+            margin: 20px auto;
+            display: block;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            background-color: #ffffff;
+        }
+        #result-text { 
+            font-size: 18px;
+            color: #2e7d32; 
+            font-weight: bold; 
+            min-height: 50px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Діаграми Ейлера-Венна (Canvas)</h1>
+        
+        <div class="description">
+            <p><strong>Експеримент:</strong> Підкидаємо гральний кубик. Простір подій <strong>Ω = {1, 2, 3, 4, 5, 6}</strong>.</p>
+            <ul>
+                <li><strong>Подія A:</strong> Випало парне число <strong>{2, 4, 6}</strong></li>
+                <li><strong>Подія B:</strong> Випало число більше за 3 <strong>{4, 5, 6}</strong></li>
+            </ul>
+        </div>
+
+        <div>
+            <button class="btn" id="btn-union" onclick="setOperation('union')">Сума (A ∪ B)</button>
+            <button class="btn" id="btn-intersection" onclick="setOperation('intersection')">Добуток (A ∩ B)</button>
+            <button class="btn" id="btn-difference" onclick="setOperation('difference')">Різниця (A \ B)</button>
+            <button class="btn" id="btn-complement" onclick="setOperation('complement')">Протилежна (Ā)</button>
+            <button class="btn" style="background-color: #9e9e9e;" onclick="setOperation('none')">Скинути</button>
+        </div>
+
+        <canvas id="vennCanvas" width="600" height="400"></canvas>
+
+        <p id="result-text">Обери операцію, щоб побачити візуалізацію множин.</p>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('vennCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Координати для малювання
+        const width = canvas.width;
+        const height = canvas.height;
+        const centerX = width / 2;
+        const centerY = height / 2;
+        const radius = 110;
+        
+        // Центри наших кіл A та B
+        const aX = centerX - 60;
+        const bX = centerX + 60;
+        
+        // Координати простору подій (прямокутника)
+        const rectX = 50, rectY = 40, rectW = 500, rectH = 320;
+
+        // Кольори
+        const colorHighlight = 'rgba(206, 147, 216, 0.6)'; // Напівпрозорий фіолетовий
+        const colorStroke = '#6a1b9a';
+        const colorText = '#333333';
+
+        // Ініціалізація
+        setOperation('none');
+
+        function setOperation(operation) {
+            // Оновлюємо активні кнопки
+            document.querySelectorAll('.btn').forEach(btn => btn.classList.remove('active'));
+            if(operation !== 'none') {
+                document.getElementById('btn-' + operation).classList.add('active');
+            }
+
+            drawVenn(operation);
+            updateText(operation);
+        }
+
+        function drawVenn(operation) {
+            // Очищуємо полотно
+            ctx.clearRect(0, 0, width, height);
+
+            // 1. Зафарбовуємо області залежно від операції
+            ctx.fillStyle = colorHighlight;
+
+            if (operation === 'union') {
+                ctx.beginPath(); ctx.arc(aX, centerY, radius, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.arc(bX, centerY, radius, 0, Math.PI * 2); ctx.fill();
+            } 
+            else if (operation === 'intersection') {
+                // Використовуємо clip для знаходження перетину
+                ctx.save();
+                ctx.beginPath(); ctx.arc(aX, centerY, radius, 0, Math.PI * 2); ctx.clip();
+                ctx.beginPath(); ctx.arc(bX, centerY, radius, 0, Math.PI * 2); ctx.fill();
+                ctx.restore();
+            } 
+            else if (operation === 'difference') {
+                // Зафарбовуємо A
+                ctx.beginPath(); ctx.arc(aX, centerY, radius, 0, Math.PI * 2); ctx.fill();
+                // Замальовуємо B білим кольором, щоб вирізати його з A
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath(); ctx.arc(bX, centerY, radius, 0, Math.PI * 2); ctx.fill();
+            } 
+            else if (operation === 'complement') {
+                // Зафарбовуємо весь простір
+                ctx.fillRect(rectX, rectY, rectW, rectH);
+                // Вирізаємо A
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath(); ctx.arc(aX, centerY, radius, 0, Math.PI * 2); ctx.fill();
+            }
+
+            // 2. Малюємо контури (щоб вони завжди були поверх заливки)
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = colorStroke;
+            
+            // Прямокутник (Простір подій Ω)
+            ctx.strokeRect(rectX, rectY, rectW, rectH);
+            
+            // Коло A
+            ctx.beginPath(); ctx.arc(aX, centerY, radius, 0, Math.PI * 2); ctx.stroke();
+            
+            // Коло B
+            ctx.beginPath(); ctx.arc(bX, centerY, radius, 0, Math.PI * 2); ctx.stroke();
+
+            // 3. Додаємо підписи та елементи
+            ctx.fillStyle = colorText;
+            
+            // Заголовки
+            ctx.font = 'bold 20px Arial';
+            ctx.fillText('Ω', rectX + 15, rectY + 30);
+            ctx.fillText('A', aX - 80, centerY - 80);
+            ctx.fillText('B', bX + 70, centerY - 80);
+
+            // Розподіляємо елементи нашої множини (числа від 1 до 6)
+            ctx.font = '18px Arial';
+            
+            // Тільки в A (число 2)
+            ctx.fillText('2', aX - 40, centerY + 10);
+            
+            // На перетині A і B (числа 4, 6)
+            ctx.fillText('4', centerX - 5, centerY - 15);
+            ctx.fillText('6', centerX - 5, centerY + 25);
+            
+            // Тільки в B (число 5)
+            ctx.fillText('5', bX + 30, centerY + 10);
+            
+            // Поза A і B (числа 1, 3)
+            ctx.fillText('1', rectX + 50, rectY + 80);
+            ctx.fillText('3', rectX + 440, rectY + 280);
+        }
+
+        function updateText(operation) {
+            let text = "";
+            switch(operation) {
+                case 'union':
+                    text = "Сума подій (A ∪ B): Сталася хоча б одна з подій. Випало {2, 4, 5, 6}.";
+                    break;
+                case 'intersection':
+                    text = "Добуток подій (A ∩ B): Обидві події сталися одночасно. Випало {4, 6}.";
+                    break;
+                case 'difference':
+                    text = "Різниця подій (A \\ B): Подія A сталася, а подія B – НІ. Випало {2}.";
+                    break;
+                case 'complement':
+                    text = "Протилежна подія (Ā): Подія A НЕ відбулася. Випало {1, 3, 5}.";
+                    break;
+                default:
+                    text = "Обери операцію, щоб побачити візуалізацію множин.";
+            }
+            document.getElementById('result-text').innerText = text;
+        }
+    </script>
+</body>
+</html>

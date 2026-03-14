@@ -1,0 +1,148 @@
+*{
+    background-color: #2E2E2E;
+    font-family: 'Josefin Sans';
+    box-sizing: border-box;
+    max-width: 100%;
+}
+
+.section-headline .container-text h1{
+    font-size: 90px;
+    text-align: center;
+    padding-top: 150px;
+}
+
+.section-blocked{
+    font-family: 'Montserrat';
+    padding-top: 30px;
+}
+
+.centered-block-container {
+    justify-content: center;
+    align-items: center;    
+    min-height: 100vh;     
+    width: 100%;
+}
+
+
+.block-row-transparent {
+    display: flex;
+    align-items: center;
+    justify-content: center; 
+    gap: 15px;               
+    padding: 10px;
+}
+
+.block-label {
+    color: #ffffff; 
+    font-size: 32px;
+    font-family: sans-serif;
+    user-select: none;
+    line-height: 1; 
+}
+
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 48px; 
+    height: 24px;
+    flex-shrink: 0;
+}
+
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #555;
+    transition: 0.3s;
+    border-radius: 24px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+}
+
+input:checked + .toggle-slider {
+    background-color: #4CAF50; 
+}
+
+input:checked + .toggle-slider:before {
+    transform: translateX(24px);
+}
+
+.integration-card {
+    display: flex;
+    width: 100%;
+    max-width: 700px;
+    height: 60px;
+    background-color: #2E2E2E; 
+    border-radius: 4px;
+    border: 2px solid #fff;
+    overflow: hidden;
+    margin: 0 auto 20px auto; 
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+}
+
+.integration-card:last-child {
+    margin-bottom: 0;
+}
+
+.integration-icon {
+    width: 60px;
+    height: 100%;
+    object-fit: cover;
+    padding: 10px; 
+    box-sizing: border-box;
+}
+
+.integration-name {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+.add-button {
+    width: 60px;
+    height: 100%;
+    background-color: #1a1a1a; 
+    border: none;
+    color: #ffffff;
+    font-size: 28px;
+    font-weight: 400;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.2s;
+}
+
+.add-button:hover {
+    background-color: #000000;
+}
+
+.section-all .section-settings a{
+    float: right; 
+    padding-right: 50px; 
+    padding-top: 20px;
+}

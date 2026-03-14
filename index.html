@@ -1,60 +1,712 @@
+Створю інтерактивний навчальний сайт з теорії ймовірностей та математичної статистики. Сайт матиме сучасний дизайн, інтерактивні елементи та тести для перевірки знань.
+
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uk">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
- <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=El+Messiri:wght@400..700&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">  
-<title>БАНК ЧАСУ</title>
-<link rel="stylesheet" href="style.css">
+    <title>Теорія Ймовірностей та Математична Статистика</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0f1a;
+            --bg-secondary: #111827;
+            --fg: #f0f4f8;
+            --muted: #6b7a90;
+            --accent: #00d4aa;
+            --accent-glow: rgba(0, 212, 170, 0.3);
+            --card: rgba(17, 24, 39, 0.8);
+            --border: rgba(255, 255, 255, 0.08);
+            --gold: #fbbf24;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Source Sans 3', sans-serif;
+            background: var(--bg);
+            color: var(--fg);
+            overflow-x: hidden;
+        }
+
+        .font-display {
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* Animated background */
+        .bg-pattern {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background: 
+                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(0, 212, 170, 0.15), transparent),
+                radial-gradient(ellipse 60% 40% at 80% 100%, rgba(251, 191, 36, 0.1), transparent),
+                var(--bg);
+        }
+
+        .floating-symbol {
+            position: absolute;
+            font-size: 24px;
+            opacity: 0.1;
+            animation: float 20s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(10deg); }
+        }
+
+        /* Navigation */
+        .nav-link {
+            position: relative;
+            padding: 0.5rem 1rem;
+            color: var(--muted);
+            transition: all 0.3s ease;
+            border-radius: 8px;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--accent);
+            background: rgba(0, 212, 170, 0.1);
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 0;
+            background: var(--accent);
+            border-radius: 2px;
+            transition: height 0.3s ease;
+        }
+
+        .nav-link:hover::before, .nav-link.active::before {
+            height: 60%;
+        }
+
+        /* Cards */
+        .topic-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .topic-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+            box-shadow: 0 20px 40px -20px var(--accent-glow);
+        }
+
+        /* Content sections */
+        .content-section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Formula styling */
+        .formula {
+            background: linear-gradient(135deg, rgba(0, 212, 170, 0.1), rgba(251, 191, 36, 0.05));
+            border-left: 4px solid var(--accent);
+            padding: 1.5rem;
+            border-radius: 0 12px 12px 0;
+            font-family: 'Times New Roman', serif;
+            font-size: 1.1rem;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+        }
+
+        /* Quiz styles */
+        .quiz-option {
+            background: var(--card);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .quiz-option:hover:not(.disabled) {
+            border-color: var(--accent);
+            background: rgba(0, 212, 170, 0.05);
+        }
+
+        .quiz-option.selected {
+            border-color: var(--accent);
+            background: rgba(0, 212, 170, 0.15);
+        }
+
+        .quiz-option.correct {
+            border-color: #22c55e;
+            background: rgba(34, 197, 94, 0.15);
+        }
+
+        .quiz-option.incorrect {
+            border-color: #ef4444;
+            background: rgba(239, 68, 68, 0.15);
+        }
+
+        .quiz-option.disabled {
+            cursor: default;
+            pointer-events: none;
+        }
+
+        .option-marker {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 2px solid var(--muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-option.selected .option-marker {
+            border-color: var(--accent);
+            background: var(--accent);
+            color: var(--bg);
+        }
+
+        /* Progress bar */
+        .progress-bar {
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--gold));
+            border-radius: 2px;
+            transition: width 0.5s ease;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), #00b894);
+            color: var(--bg);
+            font-weight: 600;
+            padding: 0.875rem 2rem;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px -10px var(--accent-glow);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--fg);
+            font-weight: 500;
+            padding: 0.875rem 2rem;
+            border-radius: 12px;
+            border: 2px solid var(--border);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--muted);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent);
+        }
+
+        /* Animations */
+        .stagger-item {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .stagger-item.visible {
+            animation: staggerIn 0.6s ease forwards;
+        }
+
+        @keyframes staggerIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Mobile menu */
+        .mobile-menu {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+
+        .mobile-menu.open {
+            transform: translateX(0);
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .badge-lecture {
+            background: rgba(0, 212, 170, 0.15);
+            color: var(--accent);
+        }
+
+        .badge-practice {
+            background: rgba(251, 191, 36, 0.15);
+            color: var(--gold);
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+        }
+
+        .tooltip::after {
+            content: attr(data-tip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(-8px);
+            background: var(--bg-secondary);
+            color: var(--fg);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border);
+        }
+
+        .tooltip:hover::after {
+            opacity: 1;
+            transform: translateX(-50%) translateY(-4px);
+        }
+
+        /* Reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
 </head>
 <body>
-<div class="section-heading text-center">
-    <h2>БАНК ЧАСУ</h2>
-        <div class="container">
-            <div class="row justify-content-center gap-5">
-                
-                <div class="col-auto">
-                    <button style=" font-size: 2.5vw;" type="button" class="btn btn-ouyline">Увійти</button>
+    <div class="bg-pattern"></div>
+    
+    <!-- Floating math symbols -->
+    <div class="floating-symbol" style="left: 5%; top: 20%; animation-delay: 0s;">∑</div>
+    <div class="floating-symbol" style="left: 15%; top: 60%; animation-delay: 2s;">∫</div>
+    <div class="floating-symbol" style="left: 85%; top: 30%; animation-delay: 4s;">π</div>
+    <div class="floating-symbol" style="left: 90%; top: 70%; animation-delay: 6s;">σ</div>
+    <div class="floating-symbol" style="left: 50%; top: 85%; animation-delay: 8s;">μ</div>
+    <div class="floating-symbol" style="left: 30%; top: 40%; animation-delay: 10s;">λ</div>
+
+    <!-- Header -->
+    <header class="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-[var(--bg)]/80 border-b border-[var(--border)]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[var(--accent)] to-[var(--gold)] flex items-center justify-center">
+                        <span class="font-display font-bold text-[var(--bg)]">P</span>
+                    </div>
+                    <span class="font-display font-bold text-lg hidden sm:block">Теорія Ймовірностей</span>
                 </div>
                 
-                <div class="col-auto">
-                    <button style="font-size: 2.5vw;" type="button" class="btn btn-ouyline-light-register"><a href="index-regist.html">Зареєструватись    </a></button>
+                <nav class="hidden lg:flex items-center gap-1">
+                    <button onclick="showSection('home')" class="nav-link active" data-section="home">Головна</button>
+                    <button onclick="showSection('lectures')" class="nav-link" data-section="lectures">Лекції</button>
+                    <button onclick="showSection('quiz')" class="nav-link" data-section="quiz">Тест</button>
+                    <button onclick="showSection('progress')" class="nav-link" data-section="progress">Прогрес</button>
+                </nav>
+
+                <button onclick="toggleMobileMenu()" class="lg:hidden p-2 rounded-lg hover:bg-[var(--card)]" aria-label="Меню">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="mobile-menu fixed inset-y-0 left-0 w-72 bg-[var(--bg-secondary)] z-50 p-6 lg:hidden border-r border-[var(--border)]">
+        <div class="flex justify-between items-center mb-8">
+            <span class="font-display font-bold text-lg">Навігація</span>
+            <button onclick="toggleMobileMenu()" class="p-2 rounded-lg hover:bg-[var(--card)]" aria-label="Закрити меню">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        <nav class="flex flex-col gap-2">
+            <button onclick="showSection('home'); toggleMobileMenu();" class="nav-link text-left">Головна</button>
+            <button onclick="showSection('lectures'); toggleMobileMenu();" class="nav-link text-left">Лекції</button>
+            <button onclick="showSection('quiz'); toggleMobileMenu();" class="nav-link text-left">Тест</button>
+            <button onclick="showSection('progress'); toggleMobileMenu();" class="nav-link text-left">Прогрес</button>
+        </nav>
+    </div>
+
+    <main class="pt-16">
+        <!-- Home Section -->
+        <section id="home" class="content-section active min-h-screen">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
+                <div class="grid lg:grid-cols-2 gap-12 items-center">
+                    <div class="stagger-item">
+                        <div class="badge badge-lecture mb-4">КПІ ім. Ігоря Сікорського</div>
+                        <h1 class="font-display text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+                            Теорія Ймовірностей та 
+                            <span class="text-transparent bg-clip-text bg-gradient-to-r from-[var(--accent)] to-[var(--gold)]">Математична Статистика</span>
+                        </h1>
+                        <p class="text-[var(--muted)] text-lg mb-8 leading-relaxed">
+                            Інтерактивний навчальний курс для здобувачів ступеня бакалавра за спеціальністю 143 «Атомна енергетика». Опануйте фундаментальні поняття та методи теорії ймовірностей.
+                        </p>
+                        <div class="flex flex-wrap gap-4">
+                            <button onclick="showSection('lectures')" class="btn-primary">
+                                Почати навчання
+                            </button>
+                            <button onclick="showSection('quiz')" class="btn-secondary">
+                                Перевірити знання
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="stagger-item relative">
+                        <div class="aspect-square max-w-md mx-auto relative">
+                            <div class="absolute inset-0 rounded-3xl bg-gradient-to-br from-[var(--accent)]/20 to-[var(--gold)]/10 backdrop-blur-sm border border-[var(--border)]"></div>
+                            <div class="absolute inset-4 rounded-2xl bg-[var(--card)] border border-[var(--border)] p-6 flex flex-col justify-center">
+                                <div class="text-center mb-6">
+                                    <div class="text-6xl font-display font-bold text-[var(--accent)] mb-2">P(A)</div>
+                                    <div class="text-[var(--muted)]">Ймовірність події A</div>
+                                </div>
+                                <div class="space-y-3">
+                                    <div class="flex justify-between items-center p-3 rounded-lg bg-[var(--bg)]/50">
+                                        <span class="text-sm">Лекцій</span>
+                                        <span class="font-bold text-[var(--accent)]">9</span>
+                                    </div>
+                                    <div class="flex justify-between items-center p-3 rounded-lg bg-[var(--bg)]/50">
+                                        <span class="text-sm">Практичних</span>
+                                        <span class="font-bold text-[var(--gold)]">8</span>
+                                    </div>
+                                    <div class="flex justify-between items-center p-3 rounded-lg bg-[var(--bg)]/50">
+                                        <span class="text-sm">Тестів</span>
+                                        <span class="font-bold">50+</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Topics Grid -->
+                <div class="mt-20">
+                    <h2 class="font-display text-2xl font-bold mb-8 stagger-item">Основні теми курсу</h2>
+                    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6" id="topicsGrid">
+                    </div>
                 </div>
             </div>
-        </div>  
-    </div>
+        </section>
 
-
- <div class="container section-login text-center">
-    <div class="row justify-content-center">
-        
-        <div class="col-12 col-md-6 col-lg-4">
-            
-         <form>
-    <div class="mb-3">
-        <input type="email" class="form-control custom-input form-control-lg" placeholder="Ім’я або адреса електронної пошти">
-    </div>
-
-    <div class="mb-3">
-        <input type="password" class="form-control custom-input form-control-lg" placeholder="Пароль">
-    </div>
-
-    <button style="margin-top: 3vw; margin-bottom: 2vw; font-family: 'El Messiri'; background-color: #494949;" type="submit" class="btn btn-dark w-50 fw-bold">Далі</button>
-</form>
-
-        </div>
-    </div>
-
-    <div class="button-gromada-reg">
-                        <div class="col-auto">
-                   <a href="index-regist-gromad.html"> <button style="font-size: 2vw; padding-bottom: 40px; font-family: 'El Messiri'; color: #8A8A8A;" type="button" class="btn btn-ouyline">Зареєструвати громаду</button>
-                </div></a>
+        <!-- Lectures Section -->
+        <section id="lectures" class="content-section min-h-screen">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div class="flex flex-col lg:flex-row gap-8">
+                    <!-- Sidebar -->
+                    <aside class="lg:w-72 flex-shrink-0">
+                        <div class="sticky top-24 bg-[var(--card)] rounded-2xl border border-[var(--border)] p-4">
+                            <h3 class="font-bold mb-4 px-2">Зміст курсу</h3>
+                            <nav class="space-y-1" id="lectureNav"></nav>
+                        </div>
+                    </aside>
+                    
+                    <!-- Content -->
+                    <div class="flex-1 min-w-0">
+                        <div id="lectureContent" class="bg-[var(--card)] rounded-2xl border border-[var(--border)] p-6 lg:p-8">
+                            <!-- Dynamic content -->
+                        </div>
+                    </div>
                 </div>
-    </div>
-</div>
-<script src="frontend.js"></script>
-</body>
-</html>
+            </div>
+        </section>
+
+        <!-- Quiz Section -->
+        <section id="quiz" class="content-section min-h-screen">
+            <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div class="text-center mb-8">
+                    <h2 class="font-display text-3xl font-bold mb-2">Перевірка знань</h2>
+                    <p class="text-[var(--muted)]">Пройдіть тест для перевірки засвоєння матеріалу</p>
+                </div>
+                
+                <div class="bg-[var(--card)] rounded-2xl border border-[var(--border)] p-6 lg:p-8">
+                    <!-- Quiz progress -->
+                    <div class="flex items-center justify-between mb-6">
+                        <span class="text-sm text-[var(--muted)]">Питання <span id="currentQuestion">1</span> з <span id="totalQuestions">10</span></span>
+                        <span class="text-sm font-medium text-[var(--accent)]" id="scoreDisplay">Очки: 0</span>
+                    </div>
+                    <div class="progress-bar mb-8">
+                        <div class="progress-fill" id="quizProgress" style="width: 10%"></div>
+                    </div>
+                    
+                    <!-- Quiz content -->
+                    <div id="quizContainer"></div>
+                    
+                    <!-- Quiz controls -->
+                    <div class="flex justify-between mt-8">
+                        <button onclick="prevQuestion()" class="btn-secondary" id="prevBtn" disabled>Попереднє</button>
+                        <button onclick="nextQuestion()" class="btn-primary" id="nextBtn">Наступне</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Progress Section -->
+        <section id="progress" class="content-section min-h-screen">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <h2 class="font-display text-3xl font-bold mb-8 text-center">Ваш прогрес</h2>
+                
+                <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                    <div class="bg-[var(--card)] rounded-2xl border border-[var(--border)] p-6 text-center">
+                        <div class="text-4xl font-display font-bold text-[var(--accent)] mb-2" id="progressLectures">0</div>
+                        <div class="text-[var(--muted)] text-sm">Пройдено лекцій</div>
+                    </div>
+                    <div class="bg-[var(--card)] rounded-2xl border border-[var(--border)] p-6 text-center">
+                        <div class="text-4xl font-display font-bold text-[var(--gold)] mb-2" id="progressQuizScore">0%</div>
+                        <div class="text-[var(--muted)] text-sm">Результат тесту</div>
+                    </div>
+                    <div class="bg-[var(--card)] rounded-2xl border border-[var(--border)] p-6 text-center">
+                        <div class="text-4xl font-display font-bold mb-2" id="progressTime">0</div>
+                        <div class="text-[var(--muted)] text-sm">Хвилин навчання</div>
+                    </div>
+                    <div class="bg-[var(--card)] rounded-2xl border border-[var(--border)] p-6 text-center">
+                        <div class="text-4xl font-display font-bold text-green-400 mb-2" id="progressStreak">0</div>
+                        <div class="text-[var(--muted)] text-sm">Днів поспіль</div>
+                    </div>
+                </div>
+
+                <div class="bg-[var(--card)] rounded-2xl border border-[var(--border)] p-6 lg:p-8">
+                    <h3 class="font-bold text-lg mb-6">Статистика по темах</h3>
+                    <div class="space-y-4" id="topicProgress"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Course Data
+        const lectures = [
+            {
+                id: 1,
+                title: "Основні поняття теорії ймовірностей",
+                badge: "lecture",
+                content: `
+                    <h2 class="font-display text-2xl font-bold mb-6">Лекція 1: Основні поняття теорії ймовірностей</h2>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <h3 class="font-bold text-lg mb-3 text-[var(--accent)]">1.1. Експеримент, випадкові події</h3>
+                            <p class="text-[var(--muted)] leading-relaxed mb-4">
+                                <strong>Випадковий експеримент</strong> — це експеримент, результат якого неможливо передбачити заздалегідь, 
+                                але який можна повторити неодноразово за тих самих умов.
+                            </p>
+                            <p class="text-[var(--muted)] leading-relaxed">
+                                <strong>Випадкова подія</strong> — це будь-який результат випадкового експерименту, 
+                                про який можна сказати, що він відбувся чи не відбувся.
+                            </p>
+                        </div>
+
+                        <div>
+                            <h3 class="font-bold text-lg mb-3 text-[var(--accent)]">1.2. Елементарні події. Простір елементарних подій</h3>
+                            <p class="text-[var(--muted)] leading-relaxed mb-4">
+                                <strong>Елементарна подія (вихід)</strong> — це найпростіший, неподільний результат експерименту.
+                            </p>
+                            <p class="text-[var(--muted)] leading-relaxed">
+                                <strong>Простір елементарних подій Ω</strong> — це множина всіх можливих елементарних подій даного експерименту.
+                            </p>
+                            <div class="formula">
+                                Ω = {ω₁, ω₂, ..., ωₙ} — скінченний простір<br>
+                                Ω = {ω₁, ω₂, ...} — нескінченний простір
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 class="font-bold text-lg mb-3 text-[var(--accent)]">1.3. Класифікація подій</h3>
+                            <ul class="space-y-3 text-[var(--muted)]">
+                                <li class="flex gap-3">
+                                    <span class="text-[var(--accent)]">•</span>
+                                    <span><strong>Достовірна подія</strong> — подія, яка обов'язково відбудеться (Ω)</span>
+                                </li>
+                                <li class="flex gap-3">
+                                    <span class="text-[var(--accent)]">•</span>
+                                    <span><strong>Неможлива подія</strong> — подія, яка ніколи не відбудеться (∅)</span>
+                                </li>
+                                <li class="flex gap-3">
+                                    <span class="text-[var(--accent)]">•</span>
+                                    <span><strong>Сумісні події</strong> — події, які можуть відбутися одночасно</span>
+                                </li>
+                                <li class="flex gap-3">
+                                    <span class="text-[var(--accent)]">•</span>
+                                    <span><strong>Несумісні події</strong> — події, які не можуть відбутися одночасно</span>
+                                </li>
+                                <li class="flex gap-3">
+                                    <span class="text-[var(--accent)]">•</span>
+                                    <span><strong>Протилежні події</strong> — дві несумісні події, одна з яких обов'язково відбудеться (A та Ā)</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h3 class="font-bold text-lg mb-3 text-[var(--accent)]">1.4. Операції над подіями</h3>
+                            <div class="grid gap-4">
+                                <div class="p-4 rounded-xl bg-[var(--bg)]/50 border border-[var(--border)]">
+                                    <strong class="text-[var(--fg)]">Сума подій (A ∪ B)</strong>
+                                    <p class="text-[var(--muted)] mt-1">Подія, яка полягає в тому, що відбудеться хоча б одна з подій A або B</p>
+                                </div>
+                                <div class="p-4 rounded-xl bg-[var(--bg)]/50 border border-[var(--border)]">
+                                    <strong class="text-[var(--fg)]">Добуток подій (A ∩ B)</strong>
+                                    <p class="text-[var(--muted)] mt-1">Подія, яка полягає в тому, що відбудуться обидві події A і B одночасно</p>
+                                </div>
+                                <div class="p-4 rounded-xl bg-[var(--bg)]/50 border border-[var(--border)]">
+                                    <strong class="text-[var(--fg)]">Різниця подій (A \ B)</strong>
+                                    <p class="text-[var(--muted)] mt-1">Подія, яка полягає в тому, що A відбудеться, а B — ні</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: 2,
+                title: "Ймовірності випадкових подій",
+                badge: "lecture",
+                content: `
+                    <h2 class="font-display text-2xl font-bold mb-6">Лекція 2: Ймовірності випадкових подій</h2>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <h3 class="font-bold text-lg mb-3 text-[var(--accent)]">2.1. Аксіоматичне означення ймовірності</h3>
+                            <p class="text-[var(--muted)] leading-relaxed mb-4">
+                                <strong>Ймовірність</strong> — це числова функція P(A), визначена на σ-алгебрі подій, яка задовольняє аксіоми:
+                            </p>
+                            <div class="formula">
+                                <strong>Аксіома 1:</strong> P(A) ≥ 0 для будь-якої події A<br><br>
+                                <strong>Аксіома 2:</strong> P(Ω) = 1<br><br>
+                                <strong>Аксіома 3:</strong> Для нескінченної послідовності попарно несумісних подій:<br>
+                                P(A₁ ∪ A₂ ∪ ...) = P(A₁) + P(A₂) + ...
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 class="font-bold text-lg mb-3 text-[var(--accent)]">2.2. Класичне означення ймовірності</h3>
+                            <p class="text-[var(--muted)] leading-relaxed mb-4">
+                                Якщо простір елементарних подій складається з n рівноможливих елементарних подій, 
+                                то ймовірність події A обчислюється як:
+                            </p>
+                            <div class="formula">
+                                <strong>P(A) = m/n</strong><br><br>
+                                де m — число елементарних подій, що сприяють події A<br>
+                                n — загальне число елементарних подій
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 class="font-bold text-lg mb-3 text-[var(--accent)]">2.3. Властивості ймовірності</h3>
+                            <ul class="space-y-3 text-[var(--muted)]">
+                                <li class="flex gap-3">
+                                    <span class="text-[var(--accent)]">1.</span>
+                                    <span>0 ≤ P(A) ≤ 1 для будь-якої події A</span>
+                                </li>
+                                <li class="flex gap-3">
+                                    <span class="text-[var(--accent)]">2.</span>
+                                    <span>P(∅) = 0 — ймовірність неможливої події</span>
+                                </li>
+                                <li class="flex gap-3">
+                                    <span class="text-[var(--accent)]">3.</span>
+                                    <span>P(Ā) = 1 - P(A) — ймовірність протилежної події</span>
+                                </li>
+                                <li class="flex gap-3">
+                                    <span class="text-[var(--accent)]">4.</span>
+                                    <span>Якщо A ⊂ B, то P(A) ≤ P(B)</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h3 class="font-bold text-lg mb-3 text-[var(--accent)]">2.4. Елементи комбінаторики</h3>
+                            <div class="grid gap-4">
+                                <div class="p-4 rounded-xl bg-[var(--bg)]/50 border border-[var(--border)]">
+                                    <strong class="text-[var(--fg)]">Перестановки</strong>
+                                    <div class="formula mt-2">Pₙ = n! = 1·2·3·...·n</div>
+                                    <p class="text-[var(--muted)] mt-2">Число способів впорядкувати n елементів</p>
+                                </div>
+                                <div class="p-4 rounded-xl bg-[var(--bg)]/50 border border-[var(--border)]">
+                                    <strong class="text-[var(--fg)]">Розміщення</strong>
+                                    <div class="formula mt-2">Aₙᵏ = n!/(n-k)!</div>
+                                    <p class="text-[var(--muted)] mt-2">Число способів вибрати k елементів з n та впорядкувати їх</p>
+                                </div>
+                                <div class="p-4 rounded-xl bg-[var(--bg)]/50 border border-[var(--border)]">
+                                    <strong class="text-[var

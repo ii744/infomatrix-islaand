@@ -1,0 +1,16 @@
+services:
+  agent:
+    build: .
+    container_name: focus_blocker_agent
+    volumes:
+      - ./credentials.json:/app/credentials.json
+      - ./token.json:/app/token.json
+      # Монтуємо тільки поточну папку до папки /app у контейнері, 
+      # щоб зміни в коді підтягувалися без перезбірки
+      - .:/app 
+    env_file:
+      - .env
+    # Додаємо інтерактивність, щоб бачити принти
+    tty: true
+    stdin_open: true
+    restart: "no"

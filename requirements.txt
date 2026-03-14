@@ -1,0 +1,10 @@
+python-dotenv
+google-api-python-client
+google-auth-httplib2
+google-auth-oauthlib
+PyPDF2
+zai-sdk==0.1.0
+requests
+sniffio
+httpx
+anyio
